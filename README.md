@@ -115,6 +115,49 @@ output:
 - `examples/monitor.os`：管程 + 条件变量版本
 - `examples/textbook.os`：`example.txt` 的教材原文，用来验证宽松解析
 
+## VSCode 编辑支持
+
+本项目通过工作区配置为 `.os` 伪代码提供零安装、随仓库生效的编辑支持：
+
+- **语法高亮**：在 `.vscode/settings.json` 中通过 `files.associations` 将 `*.os` 关联为 VSCode 内置的 C 语言，获得 C 风格关键字、注释（`//`、`/* */`）、字符串与数字高亮。
+- **Tab 片段补全**：语言级设置 `[c]` 启用了 `editor.tabCompletion: onlySnippets`，在 `.os` 文件中输入前缀后按 **Tab** 即可展开项目级代码片段（定义在 `.vscode/os.code-snippets` 中）。
+- **运行任务**：在 `.vscode/tasks.json` 中配置了 VSCode 任务：
+  - `vm: run current file`（默认 build 任务，快捷键 `Ctrl+Shift+B` 直接运行当前 `.os` 文件）
+  - `vm: run current file (no trace)`（不打印轨迹直接运行）
+
+### 片段前缀表
+
+| 前缀 | 说明与展开 |
+| --- | --- |
+| `proc` | 无参 `void` 进程骨架 |
+| `sem` | `semaphore <name> = 1;` 信号量声明 |
+| `mon` | `Monitor <name> { ... }` 管程骨架（含 `cond`、`public:`、过程与初始化块） |
+| `cond` | `cond <name>;` 条件变量声明 |
+| `wait` | `P(<sem>);` 信号量等待 |
+| `signal` | `V(<sem>);` 信号量释放 |
+| `swait` | `Swait(<s1>, <t1>, <d1>; <s2>, <t2>, <d2>);` AND 信号量操作 |
+| `ssignal` | `Ssignal(<sem>, <demand>);` AND 信号量操作 |
+| `printf` | `printf("<fmt>\n", <args>);` 格式化打印 |
+| `start` | `start(<func>);` 运行时创建进程 |
+| `if` | `if (<condition>) { ... }` 条件分支 |
+| `while` | `while (<condition>) { ... }` 循环 |
+| `for` | `for (<init>; <cond>; <step>) { ... }` 循环 |
+| `do` | `do { ... } while (<condition>);` 循环 |
+| `var` | `int <name> = 0;` 整型变量声明 |
+| `arr` | `int <name>[<N>];` 数组声明 |
+| `pc` | 经典生产者-消费者完整可运行示例（信号量 + 两个进程） |
+
+> **提示**：从空文件开始时，可新建 `my.os`，在编辑器中输入 `pc` 并按 **Tab**，即可展开一个完整的生产者-消费者示例；然后使用 `Ctrl+Shift+B`（执行 `vm: run current file` 任务）直接运行。
+>
+> **维护说明**：新增语言结构时同步更新 `.vscode/os.code-snippets`。
+
+### 已知限制
+
+1. **关键字高亮范围**：因为使用的是 VSCode 内置 C 语法高亮，`semaphore`、`monitor`、`cond`、`share` 不是标准 C 关键字，`P`/`V` 也是普通标识符，它们不会被着色为关键字。请优先通过前缀片段编写对应结构。
+2. **C/C++ 扩展诊断提示**：若安装了 VSCode C/C++ 扩展（`ms-vscode.cpptools`），该扩展会将 `.os` 当作 C 代码分析并可能对伪代码语法标注红色波浪线。若需要消除，可通过以下两种方式之一规避：
+   - 在工作区 `.vscode/settings.json` 中配置 `"C_Cpp.errorSquiggles": "disabled"`（本项目无 C 源文件，工作区级禁用安全可靠）；
+   - 或在用户设置中将 `*.os` 关联临时改回 `plaintext`。
+
 ## 测试
 
 ```bash

@@ -1,0 +1,189 @@
+{
+  "Process Definition": {
+    "scope": "c",
+    "prefix": "proc",
+    "body": [
+      "void ${1:process_name}() {",
+      "    $0",
+      "}"
+    ],
+    "description": "Top-level process skeleton"
+  },
+  "Semaphore Declaration": {
+    "scope": "c",
+    "prefix": "sem",
+    "body": [
+      "semaphore ${1:mutex} = ${2:1};"
+    ],
+    "description": "Semaphore declaration"
+  },
+  "Monitor Definition": {
+    "scope": "c",
+    "prefix": "mon",
+    "body": [
+      "Monitor ${1:MonitorName} {",
+      "    cond ${2:condition};",
+      "public:",
+      "    void ${3:procedure}() {",
+      "        $0",
+      "    }",
+      "    {",
+      "        ${4:// initialization}",
+      "    }",
+      "}"
+    ],
+    "description": "Monitor definition skeleton"
+  },
+  "Condition Variable": {
+    "scope": "c",
+    "prefix": "cond",
+    "body": [
+      "cond ${1:condition};"
+    ],
+    "description": "Condition variable declaration"
+  },
+  "Semaphore Wait (P)": {
+    "scope": "c",
+    "prefix": "wait",
+    "body": [
+      "P(${1:sem});"
+    ],
+    "description": "Wait on semaphore (P)"
+  },
+  "Semaphore Signal (V)": {
+    "scope": "c",
+    "prefix": "signal",
+    "body": [
+      "V(${1:sem});"
+    ],
+    "description": "Signal semaphore (V)"
+  },
+  "AND-Semaphore Swait": {
+    "scope": "c",
+    "prefix": "swait",
+    "body": [
+      "Swait(${1:s1}, ${2:t1}, ${3:d1}; ${4:s2}, ${5:t2}, ${6:d2});"
+    ],
+    "description": "Swait operation"
+  },
+  "AND-Semaphore Ssignal": {
+    "scope": "c",
+    "prefix": "ssignal",
+    "body": [
+      "Ssignal(${1:sem}, ${2:demand});"
+    ],
+    "description": "Ssignal operation"
+  },
+  "Printf": {
+    "scope": "c",
+    "prefix": "printf",
+    "body": [
+      "printf(\"${1:%s}\\n\", ${2:args});"
+    ],
+    "description": "Formatted print statement"
+  },
+  "Start Process": {
+    "scope": "c",
+    "prefix": "start",
+    "body": [
+      "start(${1:func});"
+    ],
+    "description": "Spawn process"
+  },
+  "If Statement": {
+    "scope": "c",
+    "prefix": "if",
+    "body": [
+      "if (${1:condition}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "If statement"
+  },
+  "While Statement": {
+    "scope": "c",
+    "prefix": "while",
+    "body": [
+      "while (${1:condition}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "While statement"
+  },
+  "For Statement": {
+    "scope": "c",
+    "prefix": "for",
+    "body": [
+      "for (${1:int i = 0}; ${2:i < n}; ${3:i++}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "For statement"
+  },
+  "Do-While Statement": {
+    "scope": "c",
+    "prefix": "do",
+    "body": [
+      "do {",
+      "    $0",
+      "} while (${1:condition});"
+    ],
+    "description": "Do-While statement"
+  },
+  "Variable Declaration": {
+    "scope": "c",
+    "prefix": "var",
+    "body": [
+      "int ${1:name} = ${2:0};"
+    ],
+    "description": "Integer variable declaration"
+  },
+  "Array Declaration": {
+    "scope": "c",
+    "prefix": "arr",
+    "body": [
+      "int ${1:name}[${2:N}];"
+    ],
+    "description": "Integer array declaration"
+  },
+  "Producer-Consumer": {
+    "scope": "c",
+    "prefix": "pc",
+    "body": [
+      "semaphore mutex = 1;",
+      "semaphore empty = 10;",
+      "semaphore full = 0;",
+      "int buffer[10];",
+      "int in = 0;",
+      "int out = 0;",
+      "",
+      "void producer() {",
+      "    int item = 0;",
+      "    while (1) {",
+      "        item = item + 1;",
+      "        P(empty);",
+      "        P(mutex);",
+      "        buffer[in] = item;",
+      "        in = (in + 1) % 10;",
+      "        printf(\"produced %d\\n\", item);",
+      "        V(mutex);",
+      "        V(full);",
+      "    }",
+      "}",
+      "",
+      "void consumer() {",
+      "    int item = 0;",
+      "    while (1) {",
+      "        P(full);",
+      "        P(mutex);",
+      "        item = buffer[out];",
+      "        out = (out + 1) % 10;",
+      "        printf(\"consumed %d\\n\", item);",
+      "        V(mutex);",
+      "        V(empty);",
+      "    }",
+      "}"
+    ],
+    "description": "Producer-consumer skeleton"
+  }
+}

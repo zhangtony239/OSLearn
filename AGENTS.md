@@ -15,3 +15,4 @@ This file provides guidance to agents when working with code in this repository.
 - Processes are **top-level `void` functions with zero parameters**; `int main()` is not a process. `start(f)` spawns extra processes at runtime.
 - Lenient mode never raises on unknown syntax: `Parser.skip_statement()` skips to the next `;` and records a warning. Full-width punctuation is normalised in `lexer.normalize()` and `…` becomes a space, which is what makes `example.txt` parse.
 - `examples/textbook.os` is the canonical lenient-parsing regression fixture; keep it byte-identical to `example.txt` when editing.
+- 新增语言结构时同步更新 `.vscode/os.code-snippets`。
