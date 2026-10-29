@@ -115,7 +115,12 @@ class Interpreter:
             for name, init, size in node.items:
                 if size is not None:
                     n = self.eval(size, frame)
-                    value = [0] * n if isinstance(n, int) and n > 0 else {}
+                    if isinstance(n, int) and not isinstance(n, bool):
+                        if n < 0:
+                            raise VMRuntimeError(f"invalid array size {n}")
+                        value = [0] * n
+                    else:
+                        value = {}
                 elif init is not None:
                     value = yield from self.eval_async(init, frame)
                 else:
@@ -400,8 +405,10 @@ class Interpreter:
             obj = self.eval(node.obj, frame)
             idx = self.eval(node.index, frame)
             if isinstance(obj, list):
-                if isinstance(idx, int) and 0 <= idx < len(obj):
-                    return obj[idx]
+                if isinstance(idx, int) and not isinstance(idx, bool):
+                    if 0 <= idx < len(obj):
+                        return obj[idx]
+                    raise VMRuntimeError(f"array index {idx} out of range for length {len(obj)}")
                 return 0
             if isinstance(obj, dict):
                 return obj.get(idx, 0)
@@ -521,10 +528,12 @@ class Interpreter:
                 container = {}
                 self.assign_to(target.obj, container, frame)
             if isinstance(container, list):
-                if not isinstance(idx, int):
+                if not isinstance(idx, int) or isinstance(idx, bool):
                     raise VMRuntimeError("array index must be an integer")
-                while len(container) <= idx:
-                    container.append(0)
+                if not (0 <= idx < len(container)):
+                    raise VMRuntimeError(
+                        f"array index {idx} out of range for length {len(container)}"
+                    )
                 container[idx] = value
             else:
                 container[idx] = value
